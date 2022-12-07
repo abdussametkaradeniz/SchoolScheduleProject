@@ -1,11 +1,14 @@
-﻿using Bussiness.Abstract;
+﻿using Business.Abstract;
+using Bussiness.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bussiness.Constant;
 
 namespace WebAPI.Controllers
 {
@@ -14,9 +17,11 @@ namespace WebAPI.Controllers
     public class CustomersController : ControllerBase
     {
         private ICustomerService _customerService;
-        public CustomersController(ICustomerService customerService)
+        private IAuthService _authService;
+        public CustomersController(ICustomerService customerService, IAuthService authService)
         {
             _customerService = customerService;
+            _authService = authService;
         }
 
         [HttpGet("GetAllCustomers")]
@@ -64,7 +69,7 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet("GetCustomerById")]
+        [HttpGet("GetCustomerById/{CustomerId}")]
         public IActionResult GetListByCustomerId(int CustomerId)
         {
             var result = _customerService.GetById(CustomerId);
@@ -124,6 +129,53 @@ namespace WebAPI.Controllers
                 return Ok(result.Data);
             }
             return BadRequest(result.Message);
+        }
+        [HttpPost("login")]
+        public ActionResult Login(UserForLoginDto userForLoginDto)
+        {
+            var userToLogin = _authService.Login(userForLoginDto);
+            if (!userToLogin.Success)
+            {
+                return BadRequest(userToLogin.Message);
+            }
+
+            var result = _authService.CreateAccessToken(userToLogin.Data);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+
+        [HttpPost("register")]
+        public ActionResult Register(UserForRegisterDto userForRegisterDto)
+        {
+            var userExists = _authService.UserExist(userForRegisterDto.Email);
+            if (!userExists.Success)
+            {
+                return BadRequest(userExists.Message);
+            }
+
+            var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);
+            var result = _authService.CreateAccessToken(registerResult.Data);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+
+        [HttpPost("GetCustomerByEmail/{email}")]
+        public ActionResult GetCustomerByEmail(string email)
+        {
+            var result = _customerService.GetByEmail(email);
+            if (result!=null)
+            {
+                return Ok(result);
+            }
+            return BadRequest(Messages.UserNotFound);
         }
     }
 }

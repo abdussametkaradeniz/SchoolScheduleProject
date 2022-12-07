@@ -3,6 +3,7 @@ using Bussiness.Constant;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,10 +39,7 @@ namespace Bussiness.Concrete
             return new SuccessDataResult<CustomerDto>(_customerDao.Get(p => p.CustomerId == CustomerId));
         }
 
-        public IDataResult<CustomerDto> GetByEmail(string email)
-        {
-            return new SuccessDataResult<CustomerDto>(_customerDao.Get(p => p.CustomerEmail == email));
-        }
+       
 
         public IDataResult<List<CustomerDto>> getList()
         {
@@ -74,10 +72,9 @@ namespace Bussiness.Concrete
             return new SuccessResult(Messages.CustomerUpdated);
         }
 
-       
-        CustomerDto ICustomerService.GetByEmail(string email)
+        public CustomerDto GetByEmail(string email)
         {
-            return _customerDao.Get(u => u.CustomerEmail == email);
+            return _customerDao.Get(p => p.CustomerEmail == email);
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Text;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EnFraCustomerDao : EnFraRepositoryBase<CustomerDto,ProgramScheduleContext>,ICustomerDao
+    public class EnFraCustomerDao : EnFraRepositoryBase<CustomerDto, ProgramScheduleContext>,ICustomerDao
     {
        
     }
