@@ -58,6 +58,7 @@ namespace Business.Concrete
             return new SuccessDataResult<CustomerDto>(userToCheck, Messages.SuccessfulLogin);
         }
 
+
         public IResult UserExist(string email)
         {
             if (_customerService.GetByEmail(email)!=null)
